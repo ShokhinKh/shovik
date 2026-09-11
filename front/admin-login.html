@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Вход для администратора</title>
+</head>
+<body>
+    <div class="logo">
+        <img src="images/logo.svg" alt="Логотип">
+    </div>
+
+    <div class="registration-card">
+        <h1>Вход в админ-панель</h1>
+        
+        <form id="adminLoginForm" action="#" method="POST">
+            <div class="form-group">
+                <label for="adminLogin">Логин<span>*</span></label>
+                <input type="text" id="adminLogin" name="adminLogin" placeholder="admin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminPassword">Пароль<span>*</span></label>
+                <input type="password" id="adminPassword" name="adminPassword" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Войти как администратор</button>
+            
+            <p class="footer-text"><a href="home.html">Вернуться на главную</a></p>
+        </form>
+    </div>
+
+    <script>
+    const adminLoginForm = document.getElementById('adminLoginForm');
+
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const login = document.getElementById('adminLogin').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ login, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    localStorage.setItem('adminToken', data.token);
+                    alert('Успешный вход в систему!');
+                    window.location.href = 'admin.html';
+                } else {
+                    alert(data.error || 'Неверный логин или пароль администратора');
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                alert('Не удалось связаться с сервером.');
+            }
+        });
+    }
+    </script>
+</body>
+</html>

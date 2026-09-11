@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нас — Я&В</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="main-page">
+
+    <div class="main-gradient-wrapper">
+        <div id="header-placeholder"></div>
+
+        <section class="about-hero-section" style="max-width: 900px; margin: 40px auto; padding: 0 20px; text-align: center;">
+            <div class="star star-1">✦</div>
+            <div class="star star-2">✦</div>
+
+            <h1 class="section-title" style="font-size: 36px; margin-bottom: 20px;">О нашем проекте</h1>
+            <p class="about-lead" style="font-size: 18px; line-height: 1.8; color: #d1cfdd; margin-bottom: 40px;">
+                <strong>BLUSH & BOLD (Я&В)</strong> — это эстетическое цифровое пространство, созданное для тех, кто стремится к гармонии внутреннего состояния и внешнего проявления.
+            </p>
+
+            <div class="about-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; text-align: left; margin-bottom: 50px;">
+                <div class="about-card" style="background: rgba(255, 255, 255, 0.04); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <h3 style="color: #e2a9b7; margin-bottom: 12px;">Наша Миссия</h3>
+                    <p style="line-height: 1.6; color: #aaa;">Предоставлять качественный, проверенный и вдохновляющий контент о здоровье, красоте, фитнесе и астрологии, помогая каждому читателю находить свой баланс.</p>
+                </div>
+
+                <div class="about-card" style="background: rgba(255, 255, 255, 0.04); padding: 25px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <h3 style="color: #e2a9b7; margin-bottom: 12px;">Авторы</h3>
+                    <p style="line-height: 1.6; color: #aaa;">Проект курируется Блейк и Вероникой — идеологами осознанного ухода за собой, физического здоровья и духовного развития.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Проверяем авторизацию: если пользователь не залогинен, сразу отправляем на вход
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadComponent(elementId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (err) {
+                console.error(`Ошибка загрузки ${filePath}:`, err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html');
+            loadComponent('footer-placeholder', 'footer.html');
+        });
+    </script>
+</body>
+</html>

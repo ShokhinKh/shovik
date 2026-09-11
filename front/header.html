@@ -1,0 +1,28 @@
+<header class="main-header">
+    <div class="header-container">
+        <a href="home.html" class="header-logo">
+            <img src="images/logo.svg" alt="Я&В Логотип">
+        </a>
+
+        <nav class="header-nav">
+            <ul>
+                <li><a href="home.html">Главная</a></li>
+                <li><a href="beauty.html">Красота</a></li>
+                <li><a href="health.html">Здоровье</a></li>
+                <li><a href="sport.html">Спорт</a></li>
+                <li><a href="astrology.html">Астрология</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="about.html">О нас</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-user-actions">
+            <div id="user-nav-block">
+                <!-- Сразу выводим кнопку выхода, так как шапка видна только авторизованным -->
+                <button onclick="localStorage.removeItem('user'); window.location.href='login.html';" class="logout-link-btn" style="cursor: pointer;">
+                    Выйти
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

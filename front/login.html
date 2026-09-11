@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Вход в аккаунт</title>
+</head>
+<body>
+    <div class="logo">
+        <a href="welcome.html">
+            <img src="images/logo.svg" alt="Логотип">
+        </a>
+    </div>
+
+    <div class="registration-card">
+        <h1>Вход</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="login">Email или Номер телефона<span>*</span></label>
+                <input type="text" id="login" required placeholder="Введите email или телефон">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль<span>*</span></label>
+                <input type="password" id="password" required placeholder="Введите пароль">
+            </div>
+
+            <button type="submit" class="submit-btn">Войти</button>
+            
+            <p class="footer-text">
+                Нет аккаунта? <a href="registration.html">Зарегистрироваться</a>
+            </p>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Собираем данные из формы (названия полей должны совпадать с тем, что ждет бэкенд)
+                const data = {
+                    login: document.getElementById('login').value.trim(),
+                    password: document.getElementById('password').value
+                };
+
+                try {
+                    // Отправляем POST запрос на роут авторизации
+                    const response = await fetch('http://localhost:3000/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    // Если сервер ответил успешно (статус 200)
+                    if (response.ok) {
+                        // ВАЖНО: Сохраняем данные пользователя в localStorage, чтобы шапка их увидела
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        
+                        // Перенаправляем на главную страницу (замените на нужную, если отличается)
+                        window.location.href = 'home.html'; 
+                    } else {
+                        // Показываем ошибку от сервера (например, "Неверный логин или пароль")
+                        alert(result.error || 'Ошибка при входе');
+                    }
+                } catch (err) {
+                    console.error('Ошибка сети:', err);
+                    alert('Не удалось связаться с сервером. Проверьте, запущен ли backend.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

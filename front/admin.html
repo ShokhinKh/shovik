@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — Я&В</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="main-page">
+
+    <div class="main-gradient-wrapper">
+        <div id="header-placeholder"></div>
+
+        <section class="admin-container" style="max-width: 700px; margin: 40px auto; padding: 30px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; backdrop-filter: blur(10px);">
+            <h1 style="text-align: center; margin-bottom: 25px;">Панель администратора</h1>
+            <h2 style="font-size: 20px; margin-bottom: 20px; color: #e2a9b7;">Добавить новую статью</h2>
+
+            <form id="adminArticleForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="title" style="display: block; margin-bottom: 5px;">Заголовок статьи <span>*</span></label>
+                    <input type="text" id="title" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="category" style="display: block; margin-bottom: 5px;">Категория <span>*</span></label>
+                    <select id="category" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;">
+                        <option value="Красота">Красота</option>
+                        <option value="Здоровье">Здоровье</option>
+                        <option value="Спорт">Спорт</option>
+                        <option value="Астрология">Астрология</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="authorName" style="display: block; margin-bottom: 5px;">Имя автора <span>*</span></label>
+                    <input type="text" id="authorName" value="Блейк и Вероника" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="coverUrl" style="display: block; margin-bottom: 5px;">Ссылка на обложку (URL)</label>
+                    <input type="text" id="coverUrl" placeholder="images/hero-cover.jpg" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="excerpt" style="display: block; margin-bottom: 5px;">Краткое описание (анонс) <span>*</span></label>
+                    <textarea id="excerpt" rows="3" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label for="contentParagraph" style="display: block; margin-bottom: 5px;">Полный текст статьи <span>*</span></label>
+                    <textarea id="contentParagraph" rows="7" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff;"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" style="width: 100%; padding: 12px; background: #e2a9b7; border: none; border-radius: 8px; color: #111; font-weight: bold; cursor: pointer;">Опубликовать статью</button>
+            </form>
+        </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+    async function loadComponent(elementId, filePath) {
+        try {
+            const response = await fetch(filePath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        } catch (err) {
+            console.error(`Ошибка загрузки ${filePath}:`, err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            alert('Доступ запрещен. Авторизуйтесь как администратор.');
+            window.location.href = 'admin-login.html';
+            return;
+        }
+
+        loadComponent('header-placeholder', 'header.html');
+        loadComponent('footer-placeholder', 'footer.html');
+
+        const form = document.getElementById('adminArticleForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const title = document.getElementById('title').value.trim();
+                const category = document.getElementById('category').value;
+                const authorName = document.getElementById('authorName').value.trim();
+                const coverUrl = document.getElementById('coverUrl').value.trim() || 'images/default-cover.jpg';
+                const excerpt = document.getElementById('excerpt').value.trim();
+                const paragraphText = document.getElementById('contentParagraph').value.trim();
+
+                const content = [
+                    { type: 'paragraph', text: paragraphText }
+                ];
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/articles', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title,
+                            category,
+                            authorName,
+                            excerpt,
+                            coverUrl,
+                            authorAvatar: 'images/avatar1.jpg',
+                            content
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('Статья успешно опубликована!');
+                        form.reset();
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Ошибка при сохранении статьи');
+                    }
+                } catch (err) {
+                    console.error('Ошибка:', err);
+                    alert('Ошибка обращения к серверу');
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

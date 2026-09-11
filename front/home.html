@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная — Я&В</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="main-page">
+
+    <div class="main-gradient-wrapper">
+        <div id="header-placeholder"></div>
+
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+            <div class="star star-1">✦</div>
+            <div class="star star-2">✦</div>
+
+            <div class="hero-quote">
+                «КРАСОТА НАЧИНАЕТСЯ В ТОТ МИНУТ, КОГДА ВЫ РЕШАЕТЕ БЫТЬ СОБОЙ»
+            </div>
+
+            <div class="hero-authors">
+                БЛEЙК И ВEРОНИКА
+            </div>
+
+            <div class="hero-article-card">
+                <img src="images/hero-cover.jpg" alt="Главная статья" class="hero-card-bg">
+                <div class="hero-card-overlay">
+                    <span class="hero-tag">ПОПУЛЯРНОЕ</span>
+                    <h2 class="hero-card-title">Искусство медленной жизни: как найти баланс в мегаполисе</h2>
+                    <p class="hero-card-excerpt">Практические советы по сохранению ментального здоровья и гармонии в условиях бесконечного потока задач...</p>
+                    <a href="article.html?id=1" class="hero-read-btn">Читать далее</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- LATEST ARTICLES SECTION -->
+        <section class="articles-section">
+            <div class="section-header">
+                <h2 class="section-title">Свежие статьи</h2>
+                <span class="section-decor">✦</span>
+            </div>
+
+            <div class="articles-grid" id="latest-articles-container">
+                <!-- Статьи подгружаются через JS -->
+            </div>
+        </section>
+
+        <!-- REVIEWS PREVIEW SECTION -->
+        <section class="reviews-section">
+            <div class="section-header">
+                <h2 class="section-title">Отзывы читателей</h2>
+                <span class="section-decor">✦</span>
+            </div>
+
+            <div class="reviews-container" id="home-reviews-container">
+                <!-- Последние отзывы подгружаются через JS -->
+            </div>
+
+            <div class="reviews-actions">
+                <a href="reviews.html" class="welcome-btn btn-secondary" style="text-decoration: none;">Все отзывы</a>
+            </div>
+        </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+    // Проверяем авторизацию: если пользователь не залогинен, отправляем на вход
+    if (!localStorage.getItem('user')) {
+        window.location.href = 'login.html';
+    }
+
+    async function loadComponent(elementId, filePath) {
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        } catch (err) {
+            console.error(`Ошибка загрузки ${filePath}:`, err);
+        }
+    }
+
+    const getStars = (rating) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('header-placeholder', 'header.html');
+        loadComponent('footer-placeholder', 'footer.html');
+
+        // Загрузка последних статей
+        fetch('http://localhost:3000/api/articles/latest')
+            .then(res => res.json())
+            .then(articles => {
+                const container = document.getElementById('latest-articles-container');
+                if (!container) return;
+                
+                if (articles.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; width:100%; color:#aaa;">Статей пока нет</p>';
+                    return;
+                }
+
+                container.innerHTML = articles.map(article => `
+                    <div class="article-card">
+                        <div class="card-image-wrapper">
+                            <img src="${article.coverUrl || 'images/default-cover.jpg'}" alt="${article.title}">
+                            <span class="card-category-tag">${article.category}</span>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">${article.title}</h3>
+                            <p class="card-excerpt">${article.excerpt}</p>
+                            <div class="card-footer">
+                                <span class="card-author">${article.authorName}</span>
+                                <a href="article.html?id=${article.id}" class="card-link">Читать →</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(err => console.error('Ошибка загрузки статей:', err));
+
+        // Загрузка первых 3 отзывов
+        fetch('http://localhost:3000/api/reviews?limit=3')
+            .then(res => res.json())
+            .then(reviews => {
+                const container = document.getElementById('home-reviews-container');
+                if (!container) return;
+
+                if (reviews.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; width:100%; color:#aaa;">Отзывов пока нет</p>';
+                    return;
+                }
+
+                container.innerHTML = reviews.map(review => {
+                    const authorName = `${review.user ? review.user.lastName : ''} ${review.user ? review.user.firstName : 'Пользователь'}`;
+                    return `
+                        <div class="review-item">
+                            <img src="images/avatar1.jpg" alt="${authorName}" class="review-avatar">
+                            <div class="review-body">
+                                <h3 class="review-author">${authorName}</h3>
+                                <div class="review-rating">${getStars(review.rating)} <span class="rating-num">${review.rating}.0</span></div>
+                                <p class="review-text">${review.text}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            })
+            .catch(err => console.error('Ошибка загрузки отзывов:', err));
+    });
+    </script>
+</body>
+</html>

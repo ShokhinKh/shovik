@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Астрология — Я&В</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="main-page">
+
+    <div class="main-gradient-wrapper">
+        <div id="header-placeholder"></div>
+
+        <section class="hero-section astrology-hero" style="padding: 40px 20px 20px;">
+            <div class="star star-1">✦</div>
+            <div class="star star-2">✦</div>
+
+            <div style="max-width: 850px; margin: 0 auto; text-align: center; text-transform: uppercase; font-size: 14px; line-height: 1.8; letter-spacing: 0.5px; opacity: 0.9;">
+                <p>Астрология — это ключ к пониманию внутренних ритмов, лунных циклов и небесных влияний.</p>
+                <p>Погрузитесь в гороскопы, астрологические прогнозы и разборы знаков зодиака,</p>
+                <p>чтобы лучше понимать себя, свои эмоции и настраиваться на гармоничный поток жизни.</p>
+                <p>Откройте секреты звезд и найдите вдохновение в космических законах.</p>
+            </div>
+        </section>
+
+        <section class="articles-section" style="padding-top: 40px;">
+            <div class="articles-grid" id="category-articles-container"></div>
+        </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="js/category.js"></script>
+    <script>
+        // Проверяем авторизацию: если пользователь не залогинен, отправляем на вход
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadComponent(elementId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (err) {
+                console.error(`Ошибка загрузки ${filePath}:`, err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComponent('header-placeholder', 'header.html');
+            loadComponent('footer-placeholder', 'footer.html');
+            
+            if (typeof loadCategoryArticles === 'function') {
+                loadCategoryArticles('Астрология');
+            }
+        });
+    </script>
+</body>
+</html>

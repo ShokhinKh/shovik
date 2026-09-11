@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы — Я&В</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="main-page">
+
+    <div class="main-gradient-wrapper">
+        <div id="header-placeholder"></div>
+
+        <section class="reviews-section" style="background: transparent;">
+            <div style="text-align: center; color: #d1cfdd; font-size: 20px; margin-bottom: 10px;">✦</div>
+            <h1 class="section-title main-reviews-title">Отзывы</h1>
+
+            <div class="reviews-container"></div>
+
+            <div class="reviews-actions">
+                <button class="leave-review-btn">Оставить отзыв</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-card">
+            <button class="modal-close" id="closeModal">&times;</button>
+            <div class="modal-logo">Я<span>&</span>В</div>
+            <h2>Оставить отзыв</h2>
+            <p class="modal-subtitle">Отзыв будет опубликован от имени вашего профиля</p>
+
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label for="reviewRating">Оценка <span>*</span></label>
+                    <select id="reviewRating" class="rating-select" required>
+                        <option value="5">★★★★★ (5/5)</option>
+                        <option value="4">★★★★☆ (4/5)</option>
+                        <option value="3">★★★☆☆ (3/5)</option>
+                        <option value="2">★★☆☆☆ (2/5)</option>
+                        <option value="1">★☆☆☆☆ (1/5)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewText">Ваш отзыв <span>*</span></label>
+                    <textarea id="reviewText" rows="4" placeholder="Поделитесь вашими впечатлениями..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn modal-submit">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    async function loadComponent(elementId, filePath) {
+        try {
+            const response = await fetch(filePath);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        } catch (err) {
+            console.error(`Ошибка загрузки ${filePath}:`, err);
+        }
+    }
+
+    const getStars = (rating) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+    async function loadAllReviews() {
+        const reviewsContainer = document.querySelector('.reviews-container');
+        if (!reviewsContainer) return;
+
+        try {
+            const response = await fetch('http://localhost:3000/api/reviews');
+            const reviews = await response.json();
+
+            if (reviews.length > 0) {
+                reviewsContainer.innerHTML = '';
+                reviews.forEach(review => {
+                    const authorName = `${review.user ? review.user.lastName : ''} ${review.user ? review.user.firstName : 'Пользователь'}`;
+                    const reviewHtml = `
+                        <div class="review-item">
+                            <img src="images/avatar1.jpg" alt="${authorName}" class="review-avatar">
+                            <div class="review-body">
+                                <h3 class="review-author">${authorName}</h3>
+                                <div class="review-rating">${getStars(review.rating)} <span class="rating-num">${review.rating}.0</span></div>
+                                <p class="review-text">${review.text}</p>
+                            </div>
+                        </div>
+                    `;
+                    reviewsContainer.insertAdjacentHTML('beforeend', reviewHtml);
+                });
+            } else {
+                reviewsContainer.innerHTML = '<p style="text-align:center; color:#aaa; width:100%;">Отзывов пока нет</p>';
+            }
+        } catch (err) {
+            console.error('Ошибка загрузки отзывов:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Проверяем авторизацию внутри DOMContentLoaded
+        if (!localStorage.getItem('user')) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        loadComponent('header-placeholder', 'header.html');
+        loadComponent('footer-placeholder', 'footer.html');
+
+        loadAllReviews();
+
+        const modal = document.getElementById('reviewModal');
+        const openBtn = document.querySelector('.leave-review-btn');
+        const closeBtn = document.getElementById('closeModal');
+        const reviewForm = document.getElementById('reviewForm');
+
+        // Прямой обработчик на кнопку открытия
+        if (openBtn) {
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user) {
+                    alert('Для того чтобы оставить отзыв, войдите в аккаунт!');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                if (modal) {
+                    modal.classList.add('active');
+                }
+            });
+        }
+
+        const closeModal = () => {
+            if (modal) modal.classList.remove('active');
+        };
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        }
+
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = JSON.parse(localStorage.getItem('user'));
+
+                if (!user) {
+                    alert('Пожалуйста, авторизуйтесь!');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const rating = document.getElementById('reviewRating').value;
+                const text = document.getElementById('reviewText').value.trim();
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: user.id, rating: Number(rating), text })
+                    });
+
+                    if (response.ok) {
+                        alert('Спасибо за ваш отзыв!');
+                        reviewForm.reset();
+                        closeModal();
+                        loadAllReviews();
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Не удалось отправить отзыв');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Ошибка при отправке отзыва');
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

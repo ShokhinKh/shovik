@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Регистрация</title>
+</head>
+<body>
+    <div class="logo">
+        <img src="images/logo.svg" alt="Логотип">
+    </div>
+
+    <div class="registration-card">
+        <h1>Регистрация</h1>
+        
+        <form id="registerForm" action="#" method="POST">
+            <div class="form-group">
+                <label for="first-name">Имя<span>*</span></label>
+                <input type="text" id="first-name" name="first-name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="last-name">Фамилия<span>*</span></label>
+                <input type="text" id="last-name" name="last-name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="middle-name">Отчество<span>*</span></label>
+                <input type="text" id="middle-name" name="middle-name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефона<span>*</span></label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email<span>*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль<span>*</span></label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Повторите пароль<span>*</span></label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Зарегистрироваться</button>
+            
+            <p class="footer-text">Уже есть учетная запись?<a href="login.html">Войти</a></p>
+        </form>
+    </div>
+
+    <script>
+    const registerForm = document.getElementById('registerForm');
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const middleName = document.getElementById('middle-name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Пароли не совпадают!');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        middleName,
+                        phone,
+                        email,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Регистрация прошла успешно!');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error || 'Ошибка при регистрации');
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                alert('Не удалось связаться с сервером. Проверьте, запущен ли он!');
+            }
+        });
+    }
+    </script>
+</body>
+</html>
