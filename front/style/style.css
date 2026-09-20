@@ -668,3 +668,116 @@ body:has(.registration-card) {
     background: #e5a4b7;
     transform: translateY(-2px);
 }
+
+/* ==================== СТРАНИЦА ПРИВЕТСТВИЯ (WELCOME) ==================== */
+body.welcome-page {
+    background: radial-gradient(circle at 50% 20%, #2a1b24 0%, #0d0c12 50%, #000000 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.welcome-bg-glow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(229, 164, 183, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.glow-1 { top: -100px; left: -100px; }
+.glow-2 { bottom: -100px; right: -100px; }
+
+.welcome-container {
+    background: #13111c;
+    border: 1px solid rgba(229, 164, 183, 0.2);
+    border-radius: 24px;
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.welcome-container .logo {
+    margin-bottom: 25px;
+}
+
+.welcome-lead {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+.welcome-description {
+    color: #c4b8d3;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.welcome-description strong {
+    color: #e5a4b7;
+    font-weight: 500;
+}
+
+.welcome-note {
+    color: #a89cb9;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+    text-align: left;
+}
+
+.welcome-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.welcome-btn {
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+}
+
+/* Кнопка "Войти" — в стиле белых кнопок сайта (например, .hero-read-btn и .submit-btn) */
+.welcome-btn.btn-primary {
+    background: #fff;
+    color: #000;
+    border: none;
+}
+
+.welcome-btn.btn-primary:hover {
+    background: #e5a4b7;
+    transform: translateY(-2px);
+}
+
+/* Кнопка "Регистрация" — в стиле контурных кнопок сайта (.nav-auth-btn) */
+.welcome-btn.btn-secondary {
+    background: rgba(229, 164, 183, 0.1);
+    border: 1px solid rgba(229, 164, 183, 0.4);
+    color: #fff;
+}
+
+.welcome-btn.btn-secondary:hover {
+    background: rgba(229, 164, 183, 0.3);
+    border-color: #e5a4b7;
+    transform: translateY(-2px);
+}
