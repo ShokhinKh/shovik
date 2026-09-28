@@ -11,7 +11,7 @@
     <div class="main-gradient-wrapper">
         <div id="header-placeholder"></div>
 
-        <!-- HERO SECTION -->
+        <!-- HERO SECTION (Самая последняя статья) -->
         <section class="hero-section">
             <div class="star star-1">✦</div>
             <div class="star star-2">✦</div>
@@ -24,7 +24,6 @@
                 БЛEЙК И ВEРОНИКА
             </div>
 
-            <!-- Динамический блок главной статьи -->
             <div class="hero-article-card" id="hero-latest-card">
                 <img src="images/default-cover.jpg" alt="Главная статья" class="hero-card-bg" id="hero-cover">
                 <div class="hero-card-overlay">
@@ -90,35 +89,28 @@
         loadComponent('header-placeholder', 'header.html');
         loadComponent('footer-placeholder', 'footer.html');
 
-        // Загрузка самой последней статьи для блока Hero
+        // Загрузка статей
         fetch('/api/articles/latest')
             .then(res => res.json())
-            .then(article => {
-                if (!article) return;
+            .then(articles => {
+                if (!articles || articles.length === 0) return;
 
+                // 1. Заполняем главный блок (HERO) самой первой (самой свежей) статьей
+                const latestArticle = articles[0];
+                
                 const coverEl = document.getElementById('hero-cover');
                 const titleEl = document.getElementById('hero-title');
                 const excerptEl = document.getElementById('hero-excerpt');
                 const linkEl = document.getElementById('hero-link');
 
-                if (titleEl) titleEl.textContent = article.title;
-                if (excerptEl) excerptEl.textContent = article.excerpt || (article.content ? article.content.substring(0, 120) + '...' : '');
-                if (coverEl && article.coverUrl) coverEl.src = article.coverUrl;
-                if (linkEl) linkEl.href = `article.html?id=${article.id}`;
-            })
-            .catch(err => console.error('Ошибка загрузки главной статьи:', err));
+                if (titleEl) titleEl.textContent = latestArticle.title;
+                if (excerptEl) excerptEl.textContent = latestArticle.excerpt || (latestArticle.content ? latestArticle.content.substring(0, 120) + '...' : '');
+                if (coverEl && latestArticle.coverUrl) coverEl.src = latestArticle.coverUrl;
+                if (linkEl) linkEl.href = `article.html?id=${latestArticle.id}`;
 
-        // Загрузка остальных свежих статей
-        fetch('/api/articles/latest')
-            .then(res => res.json())
-            .then(articles => {
+                // 2. Заполняем сетку свежих статей (можно пропустить первую, если не хотите дублировать, либо оставить все)
                 const container = document.getElementById('latest-articles-container');
                 if (!container) return;
-                
-                if (articles.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; width:100%; color:#aaa;">Статей пока нет</p>';
-                    return;
-                }
 
                 container.innerHTML = articles.map(article => `
                     <div class="article-card">
@@ -136,7 +128,7 @@
                     </div>
                 `).join('');
             })
-            .catch(err => console.error('Ошибка загрузки списка статей:', err));
+            .catch(err => console.error('Ошибка загрузки статей:', err));
 
         // Загрузка первых 3 отзывов
         fetch('/api/reviews?limit=3')
