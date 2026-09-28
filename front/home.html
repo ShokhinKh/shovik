@@ -90,7 +90,7 @@
         loadComponent('footer-placeholder', 'footer.html');
 
         // Загрузка последних статей
-        fetch('http://localhost:3000/api/articles/latest')
+        fetch('/api/articles/latest')
             .then(res => res.json())
             .then(articles => {
                 const container = document.getElementById('latest-articles-container');
@@ -121,7 +121,7 @@
             .catch(err => console.error('Ошибка загрузки статей:', err));
 
         // Загрузка первых 3 отзывов
-        fetch('http://localhost:3000/api/reviews?limit=3')
+        fetch('/api/reviews?limit=3')
             .then(res => res.json())
             .then(reviews => {
                 const container = document.getElementById('home-reviews-container');

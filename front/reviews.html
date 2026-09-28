@@ -73,7 +73,7 @@
         if (!reviewsContainer) return;
 
         try {
-            const response = await fetch('http://localhost:3000/api/reviews');
+            const response = await fetch('/api/reviews');
             const reviews = await response.json();
 
             if (reviews.length > 0) {
@@ -162,7 +162,7 @@
                 const text = document.getElementById('reviewText').value.trim();
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/reviews', {
+                    const response = await fetch('/api/reviews', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ userId: user.id, rating: Number(rating), text })

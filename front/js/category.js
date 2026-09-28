@@ -9,7 +9,7 @@ async function loadCategoryArticles(categoryName) {
     if (!container) return;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/articles/category/${encodeURIComponent(categoryName)}`);
+        const response = await fetch(`/api/articles/category/${encodeURIComponent(categoryName)}`);
         
         if (!response.ok) {
             throw new Error(`Ошибка загрузки данных: ${response.status}`);
