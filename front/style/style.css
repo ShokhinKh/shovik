@@ -237,6 +237,10 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
+.article-paragraph {
+    text-align: justify;
+}
+
 .card-image-wrapper {
     position: relative;
     height: 220px;
@@ -329,6 +333,7 @@ body {
     color: #c4b8d3;
     font-size: 14px;
     line-height: 1.6;
+    text-align: justify;
 }
 
 .reviews-actions {
