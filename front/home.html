@@ -24,13 +24,14 @@
                 БЛEЙК И ВEРОНИКА
             </div>
 
-            <div class="hero-article-card">
-                <img src="images/hero-cover.jpg" alt="Главная статья" class="hero-card-bg">
+            <!-- Динамический блок главной статьи -->
+            <div class="hero-article-card" id="hero-latest-card">
+                <img src="images/default-cover.jpg" alt="Главная статья" class="hero-card-bg" id="hero-cover">
                 <div class="hero-card-overlay">
                     <span class="hero-tag">ПОПУЛЯРНОЕ</span>
-                    <h2 class="hero-card-title">Искусство медленной жизни: как найти баланс в мегаполисе</h2>
-                    <p class="hero-card-excerpt">Практические советы по сохранению ментального здоровья и гармонии в условиях бесконечного потока задач...</p>
-                    <a href="article.html?id=1" class="hero-read-btn">Читать далее</a>
+                    <h2 class="hero-card-title" id="hero-title">Загрузка...</h2>
+                    <p class="hero-card-excerpt" id="hero-excerpt">Подождите немного...</p>
+                    <a href="#" class="hero-read-btn" id="hero-link">Читать далее</a>
                 </div>
             </div>
         </section>
@@ -89,7 +90,25 @@
         loadComponent('header-placeholder', 'header.html');
         loadComponent('footer-placeholder', 'footer.html');
 
-        // Загрузка последних статей
+        // Загрузка самой последней статьи для блока Hero
+        fetch('/api/articles/latest')
+            .then(res => res.json())
+            .then(article => {
+                if (!article) return;
+
+                const coverEl = document.getElementById('hero-cover');
+                const titleEl = document.getElementById('hero-title');
+                const excerptEl = document.getElementById('hero-excerpt');
+                const linkEl = document.getElementById('hero-link');
+
+                if (titleEl) titleEl.textContent = article.title;
+                if (excerptEl) excerptEl.textContent = article.excerpt || (article.content ? article.content.substring(0, 120) + '...' : '');
+                if (coverEl && article.coverUrl) coverEl.src = article.coverUrl;
+                if (linkEl) linkEl.href = `article.html?id=${article.id}`;
+            })
+            .catch(err => console.error('Ошибка загрузки главной статьи:', err));
+
+        // Загрузка остальных свежих статей
         fetch('/api/articles/latest')
             .then(res => res.json())
             .then(articles => {
@@ -105,7 +124,6 @@
                     <div class="article-card">
                         <div class="card-image-wrapper">
                             <img src="${article.coverUrl || 'images/default-cover.jpg'}" alt="${article.title}">
-                            
                         </div>
                         <div class="card-content">
                             <h3 class="card-title">${article.title}</h3>
@@ -118,7 +136,7 @@
                     </div>
                 `).join('');
             })
-            .catch(err => console.error('Ошибка загрузки статей:', err));
+            .catch(err => console.error('Ошибка загрузки списка статей:', err));
 
         // Загрузка первых 3 отзывов
         fetch('/api/reviews?limit=3')
