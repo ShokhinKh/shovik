@@ -30,7 +30,7 @@ async function loadCategoryArticles(categoryName) {
             <div class="article-card">
                 <div class="card-image-wrapper">
                     <img src="${article.coverUrl || 'images/default-cover.jpg'}" alt="${article.title}">
-                    <span class="card-category-tag">${article.category}</span>
+                    
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">${article.title}</h3>
