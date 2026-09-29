@@ -289,7 +289,9 @@ body {
     color: #e5a4b7;
     text-decoration: none;
 }
-
+.card-category-tag {
+    display: none !important;
+}
 /* ОТЗЫВЫ */
 .reviews-section {
     max-width: 1000px;
